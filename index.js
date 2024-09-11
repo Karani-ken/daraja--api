@@ -77,7 +77,7 @@ app.post('/stk', generateToken, async (req, res) => {
             PartyA: `254${phone}`,
             PartyB: 174379,
             PhoneNumber: `254${phone}`,
-            CallBackURL: 'https://mydomain.com/pat',
+            CallBackURL: 'https://883e-102-7-122-90.ngrok-free.app/callback', //replace with https://jamiimerchants.co.ke/callback
             AccountReference: `254${phone}`,
             TransactionDesc: 'test',
         },
@@ -85,15 +85,32 @@ app.post('/stk', generateToken, async (req, res) => {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
-        }).then((response) => {
-            console.log(response.data)
+        }).then((response) => {           
             res.status(200).json(response.data)
         }).catch((err) => {
             console.log(err);
             res.status(400).json({ message: err })
         });
 })
-
+  
 //get the call back url
+app.post("/callback", (req, res) =>{      
+    console.log("callback triggered")
+    const callbackData = req.body;
+    console.log(callbackData)
+    if(!callbackData.body.stkCallback.CallbackMetadata){
+        console.log(callbackData.body)
+       return res.json("ok");
+    }
+    console.log(callbackData.body.stkCallback.CallbackMetadata)
 
+    //get the data for saving in the database
+    const amount = callbackData.body.stkCallback.CallbackMetadata.Item[0].Value;
+    const phone = callbackData.body.stkCallback.CallbackMetadata.Item[4].Value;
+    const transactionCode = callbackData.body.stkCallback.CallbackMetadata.Item[1].Value
+
+    console.log({phone, amount, transactionCode})
+    //save the transaction to the database
+    
+});
 
